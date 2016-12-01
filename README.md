@@ -17,7 +17,7 @@
 
 [代码风格](PHP/code-style.md) * 未完成
 
-[通用开发环境](PHP/dev-env-guideline.md) * 未完成
+[通用开发环境](PHP/dev-env)
 
 ## 前端
 

@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+  web:
+    container_name: web
+    image: jmaple/docker-php-nginx
+# 此镜像允许调试
+#		 image: jmaple/docker-php-nginx:debuggable
+    restart: always
+    ports:
+# 设置端口映射，前者为宿主机的端口，后者为容器的端口
+      - "80:80"
+# 当80端口被占用时可以用8080或别的端口
+#      - "8080:80"
+# 当需要启用HTTPS时启用443端口
+#  		 - "443:443"
+#    environment:
+# 使用 debuggable 版需要配置XDEBUG_CONFIG环境变量
+#      XDEBUG_CONFIG: "remote_connect_back=1 idekey=PHPSTORM"
+    volumes:
+# 挂载项目目录至容器中
+      - ../projects:/projects
+# 挂载自定义nginx配置
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+# 挂载自定义php配置
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    depends_on:
+# 容器依赖
+      - db
+      - redis
+  db:
+    container_name: mysql
+    image: mysql:5.7.12
+    restart: always
+    user: root
+    environment:
+# 设置 MYSQL ROOT 用户密码
+      MYSQL_ROOT_PASSWORD: root
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+# 使用宿主机的文件夹存储MySQL数据，避免数据因容器误删而丢失
+#      - ../mysql-data:/var/lib/mysql
+# MySQL配置文件
+      - ./mysql/my.cnf:/etc/my.cnf
+  redis:
+    container_name: redis
+    image: redis:3.0.7-alpine
+    ports:
+      - "6375:6375"
+    volumes:
+# 使用宿主机的文件夹存储redis数据，避免数据因容器误删而丢失
+#      - ../redis-data:/data
+    restart: always
